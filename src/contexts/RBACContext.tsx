@@ -1,28 +1,28 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, ReactNode } from "react";
+import { useAuth, UserRole } from "@/contexts/AuthContext";
 
-export type UserRole = "agent" | "supervisor" | "admin";
+// Re-export for backward compatibility
+export type { UserRole } from "@/contexts/AuthContext";
 
 interface RBACContextType {
   role: UserRole;
-  setRole: (role: UserRole) => void;
   userId: string;
-  teamId: string;
+  teamId: string | null;
   userName: string;
 }
 
 const RBACContext = createContext<RBACContextType | undefined>(undefined);
 
 export function RBACProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<UserRole>("agent");
+  const { user, role, profile } = useAuth();
 
   return (
     <RBACContext.Provider
       value={{
         role,
-        setRole,
-        userId: "agent-001",
-        teamId: "team-001",
-        userName: "Ahmed Ali",
+        userId: user?.id ?? "",
+        teamId: profile?.team_id ?? null,
+        userName: profile?.full_name ?? user?.email?.split("@")[0] ?? "User",
       }}
     >
       {children}
