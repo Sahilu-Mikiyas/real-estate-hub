@@ -86,6 +86,42 @@ export type Database = {
         }
         Relationships: []
       }
+      social_posts: {
+        Row: {
+          agent_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          platform: Database["public"]["Enums"]["social_platform"]
+          post_date: string
+          property: string | null
+          team_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          platform: Database["public"]["Enums"]["social_platform"]
+          post_date?: string
+          property?: string | null
+          team_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          platform?: Database["public"]["Enums"]["social_platform"]
+          post_date?: string
+          property?: string | null
+          team_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -101,6 +137,45 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      visits: {
+        Row: {
+          agent_id: string
+          client_name: string
+          created_at: string
+          id: string
+          outcome: string | null
+          property: string | null
+          team_id: string | null
+          updated_at: string
+          visit_date: string
+          visit_type: Database["public"]["Enums"]["visit_type"]
+        }
+        Insert: {
+          agent_id: string
+          client_name: string
+          created_at?: string
+          id?: string
+          outcome?: string | null
+          property?: string | null
+          team_id?: string | null
+          updated_at?: string
+          visit_date?: string
+          visit_type?: Database["public"]["Enums"]["visit_type"]
+        }
+        Update: {
+          agent_id?: string
+          client_name?: string
+          created_at?: string
+          id?: string
+          outcome?: string | null
+          property?: string | null
+          team_id?: string | null
+          updated_at?: string
+          visit_date?: string
+          visit_type?: Database["public"]["Enums"]["visit_type"]
         }
         Relationships: []
       }
@@ -132,6 +207,14 @@ export type Database = {
         | "negotiating"
         | "closed"
         | "lost"
+      social_platform:
+        | "facebook"
+        | "instagram"
+        | "telegram"
+        | "tiktok"
+        | "linkedin"
+        | "twitter"
+      visit_type: "site" | "office"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -269,6 +352,15 @@ export const Constants = {
         "closed",
         "lost",
       ],
+      social_platform: [
+        "facebook",
+        "instagram",
+        "telegram",
+        "tiktok",
+        "linkedin",
+        "twitter",
+      ],
+      visit_type: ["site", "office"],
     },
   },
 } as const

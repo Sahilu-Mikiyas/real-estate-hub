@@ -1,4 +1,4 @@
-import { Users, Eye, CheckCircle, Star, TrendingUp } from "lucide-react";
+import { Users, Eye, CheckCircle, Star } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { PerformanceChart } from "@/components/dashboard/PerformanceChart";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
@@ -11,13 +11,10 @@ import { supabase } from "@/integrations/supabase/client";
 const Dashboard = () => {
   const { role, userId, teamId } = useRBAC();
 
-  // Fetch lead counts based on role
   const { data: leadCount = 0 } = useQuery({
     queryKey: ["dashboard-leads", role, userId, teamId],
     queryFn: async () => {
-      let query = supabase.from("leads").select("id", { count: "exact", head: true });
-      // RLS handles filtering automatically
-      const { count } = await query;
+      const { count } = await supabase.from("leads").select("id", { count: "exact", head: true });
       return count ?? 0;
     },
   });
@@ -25,28 +22,39 @@ const Dashboard = () => {
   const { data: closedCount = 0 } = useQuery({
     queryKey: ["dashboard-closed", role, userId, teamId],
     queryFn: async () => {
-      let query = supabase
+      const { count } = await supabase
         .from("leads")
         .select("id", { count: "exact", head: true })
         .eq("status", "closed");
-      const { count } = await query;
+      return count ?? 0;
+    },
+  });
+
+  const { data: visitCount = 0 } = useQuery({
+    queryKey: ["dashboard-visits", role, userId, teamId],
+    queryFn: async () => {
+      const { count } = await supabase.from("visits").select("id", { count: "exact", head: true });
+      return count ?? 0;
+    },
+  });
+
+  const { data: postCount = 0 } = useQuery({
+    queryKey: ["dashboard-posts", role, userId, teamId],
+    queryFn: async () => {
+      const { count } = await supabase.from("social_posts").select("id", { count: "exact", head: true });
       return count ?? 0;
     },
   });
 
   const stats = [
     { title: "Total Leads", value: leadCount, icon: Users, subtitle: "All tracked leads" },
-    { title: "Site Visits", value: 0, icon: Eye, subtitle: "Coming soon" },
+    { title: "Site Visits", value: visitCount, icon: Eye, subtitle: "Logged visits" },
     { title: "Closings", value: closedCount, icon: CheckCircle, subtitle: "Closed deals" },
-    { title: "Points", value: 0, icon: Star, subtitle: "Earn via activity" },
+    { title: "Posts", value: postCount, icon: Star, subtitle: "Social media posts" },
   ];
 
   const dashboardTitle =
-    role === "admin"
-      ? "Admin Dashboard"
-      : role === "supervisor"
-      ? "Team Dashboard"
-      : "My Dashboard";
+    role === "admin" ? "Admin Dashboard" : role === "supervisor" ? "Team Dashboard" : "My Dashboard";
 
   const dashboardSubtitle =
     role === "admin"
@@ -62,17 +70,14 @@ const Dashboard = () => {
         <p className="text-sm text-muted-foreground mt-0.5">{dashboardSubtitle}</p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
           <StatCard key={stat.title} {...stat} index={i} />
         ))}
       </div>
 
-      {/* Chart */}
       <PerformanceChart />
 
-      {/* Bottom row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
           <RecentActivity />
