@@ -12,6 +12,7 @@ import Leads from "./pages/Leads";
 import Visits from "./pages/Visits";
 import SocialMedia from "./pages/SocialMedia";
 import Inventory from "./pages/Inventory";
+import PropertyShowroom from "./pages/PropertyShowroom";
 import Leaderboard from "./pages/Leaderboard";
 import Rewards from "./pages/Rewards";
 import AdminPanel from "./pages/AdminPanel";
@@ -50,6 +51,7 @@ const App = () => (
                         <Route path="/visits" element={<Visits />} />
                         <Route path="/social" element={<SocialMedia />} />
                         <Route path="/inventory" element={<Inventory />} />
+                        <Route path="/showroom" element={<PropertyShowroom />} />
                         <Route path="/leaderboard" element={<Leaderboard />} />
                         <Route path="/rewards" element={<Rewards />} />
                         <Route
