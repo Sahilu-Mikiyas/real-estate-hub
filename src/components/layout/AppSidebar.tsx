@@ -10,6 +10,7 @@ import {
   Shield,
   ChevronLeft,
   ChevronRight,
+  Home,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useRBAC } from "@/contexts/RBACContext";
@@ -21,6 +22,7 @@ const navItems = [
   { title: "Visits", path: "/visits", icon: CalendarDays, roles: ["agent", "supervisor", "admin"] },
   { title: "Social Media", path: "/social", icon: Share2, roles: ["agent", "supervisor", "admin"] },
   { title: "Inventory", path: "/inventory", icon: Building2, roles: ["agent", "supervisor", "admin"] },
+  { title: "Showroom", path: "/showroom", icon: Home, roles: ["agent", "supervisor", "admin"] },
   { title: "Leaderboard", path: "/leaderboard", icon: Trophy, roles: ["agent", "supervisor", "admin"] },
   { title: "Rewards", path: "/rewards", icon: Gift, roles: ["agent", "supervisor", "admin"] },
   { title: "Admin Panel", path: "/admin", icon: Shield, roles: ["admin"] },
