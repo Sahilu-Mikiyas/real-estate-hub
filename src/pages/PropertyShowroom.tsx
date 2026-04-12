@@ -173,7 +173,7 @@ const PropertyShowroom = () => {
                   return (
                     <>
                       <div className="text-center">
-                        {slide.url ? (
+                        {"url" in slide && slide.url ? (
                           <img src={slide.url} alt={slide.label} className="max-h-72 object-contain" />
                         ) : (
                           <div className="flex flex-col items-center gap-2">
