@@ -1,13 +1,12 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Building2, MapPin, ChevronLeft, ChevronRight, Maximize2, Bed, Bath, Ruler, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Building2, MapPin, ChevronLeft, ChevronRight, Bed, Bath, Ruler, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { getPropertyImage, getPropertyImages } from "@/lib/propertyImages";
 
 const typeLabels: Record<string, string> = { plot: "Plots", villa: "Villas", shop: "Shops", flat: "Flats" };
-const typeEmojis: Record<string, string> = { plot: "🏗️", villa: "🏡", shop: "🏪", flat: "🏢" };
 const statusStyles: Record<string, string> = {
   available: "bg-green-100 text-green-700",
   sold: "bg-red-100 text-red-700",
@@ -27,7 +26,6 @@ const PropertyShowroom = () => {
     },
   });
 
-  // Group by type -> block
   const grouped = useMemo(() => {
     const map: Record<string, Record<string, any[]>> = {};
     for (const p of properties) {
@@ -40,23 +38,6 @@ const PropertyShowroom = () => {
   }, [properties]);
 
   const types = Object.keys(grouped);
-
-  // Gallery placeholder images based on property type
-  const getGalleryImages = (prop: any) => {
-    const galleries = prop.gallery_images && (prop.gallery_images as string[]).length > 0 
-      ? (prop.gallery_images as string[]) 
-      : [];
-    // If no real images, create placeholder slides
-    if (galleries.length === 0) {
-      return [
-        { type: "exterior", label: "Exterior View" },
-        { type: "interior", label: "Interior View" },
-        { type: "plan", label: "Floor Plan" },
-        { type: "location", label: "Location Map" },
-      ];
-    }
-    return galleries.map((url: string, i: number) => ({ type: "image", label: `Image ${i + 1}`, url }));
-  };
 
   return (
     <div className="space-y-6">
@@ -86,7 +67,7 @@ const PropertyShowroom = () => {
           <TabsList className="bg-secondary">
             {types.map(t => (
               <TabsTrigger key={t} value={t} className="capitalize data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
-                <span className="mr-1.5">{typeEmojis[t]}</span> {typeLabels[t] || t}
+                {typeLabels[t] || t}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -111,12 +92,14 @@ const PropertyShowroom = () => {
                         onClick={() => { setSelectedProperty(prop); setGalleryIndex(0); }}
                         className="bg-card rounded-xl shadow-card overflow-hidden cursor-pointer group"
                       >
-                        {/* Preview image area */}
-                        <div className="h-40 bg-gradient-to-br from-secondary to-muted flex items-center justify-center relative">
-                          <span className="text-5xl">{typeEmojis[prop.type]}</span>
-                          <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors flex items-center justify-center">
-                            <Maximize2 className="w-6 h-6 text-primary-foreground opacity-0 group-hover:opacity-70 transition-opacity" />
-                          </div>
+                        <div className="h-40 relative overflow-hidden">
+                          <img
+                            src={getPropertyImage(prop.type, i)}
+                            alt={prop.name}
+                            loading="lazy"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                           <span className={`absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${statusStyles[prop.status]}`}>
                             {prop.status}
                           </span>
@@ -165,39 +148,30 @@ const PropertyShowroom = () => {
               onClick={e => e.stopPropagation()}
               className="bg-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
             >
-              {/* Gallery slider */}
-              <div className="relative h-64 sm:h-80 bg-gradient-to-br from-secondary to-muted flex items-center justify-center">
+              <div className="relative h-64 sm:h-80 overflow-hidden rounded-t-2xl">
                 {(() => {
-                  const slides = getGalleryImages(selectedProperty);
-                  const slide = slides[galleryIndex];
+                  const images = getPropertyImages(selectedProperty.type);
+                  const img = images[galleryIndex % images.length];
                   return (
                     <>
-                      <div className="text-center">
-                        {"url" in slide && slide.url ? (
-                          <img src={slide.url} alt={slide.label} className="max-h-72 object-contain" />
-                        ) : (
-                          <div className="flex flex-col items-center gap-2">
-                            <span className="text-6xl">{typeEmojis[selectedProperty.type]}</span>
-                            <span className="text-sm text-muted-foreground font-medium">{slide.label}</span>
-                          </div>
-                        )}
-                      </div>
-                      {slides.length > 1 && (
+                      <img src={img} alt={selectedProperty.name} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      {images.length > 1 && (
                         <>
                           <button
-                            onClick={() => setGalleryIndex((galleryIndex - 1 + slides.length) % slides.length)}
+                            onClick={() => setGalleryIndex((galleryIndex - 1 + images.length) % images.length)}
                             className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-card/80 hover:bg-card shadow transition-colors"
                           >
                             <ChevronLeft className="w-5 h-5" />
                           </button>
                           <button
-                            onClick={() => setGalleryIndex((galleryIndex + 1) % slides.length)}
+                            onClick={() => setGalleryIndex((galleryIndex + 1) % images.length)}
                             className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-card/80 hover:bg-card shadow transition-colors"
                           >
                             <ChevronRight className="w-5 h-5" />
                           </button>
                           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                            {slides.map((_: any, idx: number) => (
+                            {images.map((_, idx) => (
                               <button
                                 key={idx}
                                 onClick={() => setGalleryIndex(idx)}
@@ -221,9 +195,8 @@ const PropertyShowroom = () => {
                 </span>
               </div>
 
-              {/* Details */}
               <div className="p-6 space-y-4">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between flex-wrap gap-2">
                   <div>
                     <h2 className="text-xl font-bold text-foreground">{selectedProperty.name}</h2>
                     <p className="text-sm text-muted-foreground capitalize">{selectedProperty.type} • {selectedProperty.location} • {selectedProperty.block}</p>
@@ -235,7 +208,6 @@ const PropertyShowroom = () => {
                   <p className="text-sm text-muted-foreground leading-relaxed">{selectedProperty.description}</p>
                 )}
 
-                {/* Specs */}
                 <div className="grid grid-cols-3 gap-3">
                   {selectedProperty.area_sqft && (
                     <div className="bg-secondary rounded-xl p-3 text-center">
@@ -260,7 +232,6 @@ const PropertyShowroom = () => {
                   )}
                 </div>
 
-                {/* Features */}
                 {selectedProperty.features && (selectedProperty.features as string[]).length > 0 && (
                   <div>
                     <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">Features</h4>
