@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Building2, Plus, Pencil, Trash2, Search, Filter } from "lucide-react";
+import { Building2, Plus, Pencil, Trash2, Search, Filter, X, Bed, Bath, Ruler, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRBAC } from "@/contexts/RBACContext";
@@ -11,18 +11,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { getPropertyImage, getPropertyImages } from "@/lib/propertyImages";
 
 const statusStyles: Record<string, string> = {
   available: "bg-green-100 text-green-700 border-green-200",
   sold: "bg-red-100 text-red-700 border-red-200",
   reserved: "bg-yellow-100 text-yellow-700 border-yellow-200",
-};
-
-const typeEmojis: Record<string, string> = {
-  plot: "🏗️",
-  villa: "🏡",
-  shop: "🏪",
-  flat: "🏢",
 };
 
 type PropertyForm = {
@@ -54,6 +48,8 @@ const Inventory = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<PropertyForm>(emptyForm);
+  const [selectedProperty, setSelectedProperty] = useState<any>(null);
+  const [galleryIndex, setGalleryIndex] = useState(0);
 
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties"],
@@ -103,7 +99,7 @@ const Inventory = () => {
   });
 
   const filtered = properties.filter(p => {
-    if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
+    if (search && !p.name.toLowerCase().includes(search.toLowerCase()) && !p.location.toLowerCase().includes(search.toLowerCase())) return false;
     if (typeFilter !== "all" && p.type !== typeFilter) return false;
     if (statusFilter !== "all" && p.status !== statusFilter) return false;
     return true;
@@ -120,12 +116,17 @@ const Inventory = () => {
     setModalOpen(true);
   };
 
+  const openDetail = (prop: any) => {
+    setSelectedProperty(prop);
+    setGalleryIndex(0);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-xl font-semibold text-foreground">Inventory</h1>
-          <p className="text-sm text-muted-foreground">Property listings and status</p>
+          <p className="text-sm text-muted-foreground">{filtered.length} properties</p>
         </div>
         {role === "admin" && (
           <Dialog open={modalOpen} onOpenChange={(o) => { setModalOpen(o); if (!o) { setEditingId(null); setForm(emptyForm); } }}>
@@ -242,9 +243,9 @@ const Inventory = () => {
 
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
+          {[...Array(8)].map((_, i) => (
             <div key={i} className="bg-card rounded-xl shadow-card animate-pulse">
-              <div className="h-32 bg-secondary" />
+              <div className="h-40 bg-secondary rounded-t-xl" />
               <div className="p-4 space-y-2">
                 <div className="h-4 bg-secondary rounded w-3/4" />
                 <div className="h-3 bg-secondary rounded w-1/2" />
@@ -262,33 +263,46 @@ const Inventory = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ delay: i * 0.05 }}
+                transition={{ delay: i * 0.04 }}
                 whileHover={{ scale: 1.03, boxShadow: "0 8px 30px rgba(0,0,0,0.12)" }}
-                className="bg-card rounded-xl shadow-card overflow-hidden group"
+                onClick={() => openDetail(prop)}
+                className="bg-card rounded-xl shadow-card overflow-hidden group cursor-pointer"
               >
-                <div className="h-32 bg-secondary flex items-center justify-center text-4xl relative">
-                  {typeEmojis[prop.type] || "🏠"}
+                <div className="h-40 relative overflow-hidden">
+                  <img
+                    src={getPropertyImage(prop.type, i)}
+                    alt={prop.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  <span className={`absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${statusStyles[prop.status]}`}>
+                    {prop.status}
+                  </span>
                   {role === "admin" && (
-                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => openEdit(prop)} className="p-1.5 bg-card/90 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors">
+                    <div className="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={(e) => { e.stopPropagation(); openEdit(prop); }} className="p-1.5 bg-card/90 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
-                      <button onClick={() => { if (confirm("Delete this property?")) deleteMutation.mutate(prop.id); }} className="p-1.5 bg-card/90 rounded-lg hover:bg-destructive hover:text-destructive-foreground transition-colors">
+                      <button onClick={(e) => { e.stopPropagation(); if (confirm("Delete this property?")) deleteMutation.mutate(prop.id); }} className="p-1.5 bg-card/90 rounded-lg hover:bg-destructive hover:text-destructive-foreground transition-colors">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   )}
                 </div>
                 <div className="p-4">
-                  <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-start justify-between mb-1">
                     <h3 className="text-sm font-semibold text-foreground leading-tight">{prop.name}</h3>
-                    <span className={`shrink-0 ml-2 inline-block px-2 py-0.5 rounded-full text-[10px] font-medium border capitalize ${statusStyles[prop.status]}`}>
-                      {prop.status}
-                    </span>
                   </div>
-                  <p className="text-xs text-muted-foreground mb-0.5 capitalize">{prop.type} • {prop.location || prop.block}</p>
-                  {prop.area_sqft && <p className="text-xs text-muted-foreground">{prop.area_sqft} sqft</p>}
-                  <p className="text-lg font-bold text-accent mt-1">{prop.price_label || `PKR ${(prop.price / 100000).toFixed(0)}L`}</p>
+                  <p className="text-xs text-muted-foreground mb-1 capitalize flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> {prop.location} • {prop.block}
+                  </p>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground mb-1">
+                    {prop.area_sqft && <span className="flex items-center gap-1"><Ruler className="w-3 h-3" />{prop.area_sqft} sqft</span>}
+                    {prop.bedrooms && <span className="flex items-center gap-1"><Bed className="w-3 h-3" />{prop.bedrooms}</span>}
+                    {prop.bathrooms && <span className="flex items-center gap-1"><Bath className="w-3 h-3" />{prop.bathrooms}</span>}
+                  </div>
+                  <p className="text-lg font-bold text-accent">{prop.price_label || `PKR ${(prop.price / 100000).toFixed(0)}L`}</p>
                   {prop.features && prop.features.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {(prop.features as string[]).slice(0, 3).map((f) => (
@@ -309,6 +323,129 @@ const Inventory = () => {
           <p>No properties found</p>
         </div>
       )}
+
+      {/* Property Detail Modal */}
+      <AnimatePresence>
+        {selectedProperty && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
+            onClick={() => setSelectedProperty(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+            >
+              {/* Image gallery */}
+              <div className="relative h-64 sm:h-80 overflow-hidden rounded-t-2xl">
+                {(() => {
+                  const images = getPropertyImages(selectedProperty.type);
+                  const img = images[galleryIndex % images.length];
+                  return (
+                    <>
+                      <img src={img} alt={selectedProperty.name} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      {images.length > 1 && (
+                        <>
+                          <button
+                            onClick={() => setGalleryIndex((galleryIndex - 1 + images.length) % images.length)}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-card/80 hover:bg-card shadow transition-colors"
+                          >
+                            <ChevronLeft className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => setGalleryIndex((galleryIndex + 1) % images.length)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-card/80 hover:bg-card shadow transition-colors"
+                          >
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
+                          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                            {images.map((_, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => setGalleryIndex(idx)}
+                                className={`w-2 h-2 rounded-full transition-colors ${idx === galleryIndex ? "bg-accent" : "bg-card/60"}`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  );
+                })()}
+                <button
+                  onClick={() => setSelectedProperty(null)}
+                  className="absolute top-3 right-3 p-2 rounded-full bg-card/80 hover:bg-card shadow transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold capitalize ${statusStyles[selectedProperty.status]}`}>
+                  {selectedProperty.status}
+                </span>
+              </div>
+
+              {/* Details */}
+              <div className="p-6 space-y-4">
+                <div className="flex items-start justify-between flex-wrap gap-2">
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">{selectedProperty.name}</h2>
+                    <p className="text-sm text-muted-foreground capitalize flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5" /> {selectedProperty.type} • {selectedProperty.location} • {selectedProperty.block}
+                    </p>
+                  </div>
+                  <p className="text-2xl font-bold text-accent">{selectedProperty.price_label}</p>
+                </div>
+
+                {selectedProperty.description && (
+                  <p className="text-sm text-muted-foreground leading-relaxed">{selectedProperty.description}</p>
+                )}
+
+                {/* Specs */}
+                <div className="grid grid-cols-3 gap-3">
+                  {selectedProperty.area_sqft && (
+                    <div className="bg-secondary rounded-xl p-3 text-center">
+                      <Ruler className="w-5 h-5 mx-auto text-accent mb-1" />
+                      <p className="text-sm font-semibold text-foreground">{selectedProperty.area_sqft} sqft</p>
+                      <p className="text-[10px] text-muted-foreground">Area</p>
+                    </div>
+                  )}
+                  {selectedProperty.bedrooms && (
+                    <div className="bg-secondary rounded-xl p-3 text-center">
+                      <Bed className="w-5 h-5 mx-auto text-accent mb-1" />
+                      <p className="text-sm font-semibold text-foreground">{selectedProperty.bedrooms}</p>
+                      <p className="text-[10px] text-muted-foreground">Bedrooms</p>
+                    </div>
+                  )}
+                  {selectedProperty.bathrooms && (
+                    <div className="bg-secondary rounded-xl p-3 text-center">
+                      <Bath className="w-5 h-5 mx-auto text-accent mb-1" />
+                      <p className="text-sm font-semibold text-foreground">{selectedProperty.bathrooms}</p>
+                      <p className="text-[10px] text-muted-foreground">Bathrooms</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Features */}
+                {selectedProperty.features && (selectedProperty.features as string[]).length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">Features</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {(selectedProperty.features as string[]).map((f: string) => (
+                        <span key={f} className="text-xs px-2.5 py-1 rounded-lg bg-accent/10 text-accent font-medium">{f}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
