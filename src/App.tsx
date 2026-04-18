@@ -9,12 +9,17 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Leads from "./pages/Leads";
+import LeadFollowup from "./pages/LeadFollowup";
 import Visits from "./pages/Visits";
 import SocialMedia from "./pages/SocialMedia";
 import Inventory from "./pages/Inventory";
 import PropertyShowroom from "./pages/PropertyShowroom";
+import Closings from "./pages/Closings";
 import Leaderboard from "./pages/Leaderboard";
 import Rewards from "./pages/Rewards";
+import Profile from "./pages/Profile";
+import TeamOverview from "./pages/TeamOverview";
+import AgentDetail from "./pages/AgentDetail";
 import AdminPanel from "./pages/AdminPanel";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -32,13 +37,11 @@ const App = () => (
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
-            {/* Protected routes */}
             <Route
               path="/*"
               element={
@@ -48,12 +51,31 @@ const App = () => (
                       <Routes>
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/leads" element={<Leads />} />
+                        <Route path="/followup" element={<LeadFollowup />} />
                         <Route path="/visits" element={<Visits />} />
                         <Route path="/social" element={<SocialMedia />} />
                         <Route path="/inventory" element={<Inventory />} />
                         <Route path="/showroom" element={<PropertyShowroom />} />
+                        <Route path="/closings" element={<Closings />} />
                         <Route path="/leaderboard" element={<Leaderboard />} />
                         <Route path="/rewards" element={<Rewards />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route
+                          path="/team"
+                          element={
+                            <ProtectedRoute allowedRoles={["supervisor", "admin"]}>
+                              <TeamOverview />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/team/:id"
+                          element={
+                            <ProtectedRoute allowedRoles={["supervisor", "admin"]}>
+                              <AgentDetail />
+                            </ProtectedRoute>
+                          }
+                        />
                         <Route
                           path="/admin"
                           element={
