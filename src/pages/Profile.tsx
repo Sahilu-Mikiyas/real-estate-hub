@@ -269,11 +269,11 @@ export default function Profile() {
               <div className="grid md:grid-cols-3 gap-4">
                 <Card><CardContent className="p-5">
                   <p className="text-xs text-muted-foreground">Total Revenue Generated</p>
-                  <p className="text-2xl font-bold text-foreground mt-1">PKR {stats.totalRevenue.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-foreground mt-1">ETB {stats.totalRevenue.toLocaleString()}</p>
                 </CardContent></Card>
                 <Card><CardContent className="p-5">
                   <p className="text-xs text-muted-foreground">Commission Earned</p>
-                  <p className="text-2xl font-bold text-accent mt-1">PKR {stats.totalCommission.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-accent mt-1">ETB {stats.totalCommission.toLocaleString()}</p>
                 </CardContent></Card>
                 <Card><CardContent className="p-5">
                   <p className="text-xs text-muted-foreground">Site Visits</p>

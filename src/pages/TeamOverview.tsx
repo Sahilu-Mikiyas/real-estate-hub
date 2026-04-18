@@ -107,7 +107,7 @@ export default function TeamOverview() {
                 {[
                   { k: "points", l: "Points" }, { k: "leads", l: "Leads" }, { k: "closedLeads", l: "Closed leads" },
                   { k: "visits", l: "Visits" }, { k: "posts", l: "Posts" }, { k: "closings", l: "Closings" },
-                  { k: "revenue", l: "Revenue (PKR)" }, { k: "commission", l: "Commission (PKR)" },
+                  { k: "revenue", l: "Revenue (ETB)" }, { k: "commission", l: "Commission (ETB)" },
                 ].map(row => (
                   <tr key={row.k} className="border-b border-border last:border-0">
                     <td className="px-4 py-2.5 text-sm font-medium">{row.l}</td>

@@ -190,8 +190,8 @@ export default function Closings() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KpiCard icon={<FileSignature className="w-5 h-5" />} label="Total Deals" value={total} />
         <KpiCard icon={<CheckCircle2 className="w-5 h-5" />} label="Completed" value={completed} accent />
-        <KpiCard icon={<DollarSign className="w-5 h-5" />} label="Revenue" value={`PKR ${(totalRevenue / 1000000).toFixed(1)}M`} />
-        <KpiCard icon={<DollarSign className="w-5 h-5" />} label="Commission" value={`PKR ${(totalCommission / 1000).toFixed(0)}K`} accent />
+        <KpiCard icon={<DollarSign className="w-5 h-5" />} label="Revenue" value={`ETB ${(totalRevenue / 1000000).toFixed(1)}M`} />
+        <KpiCard icon={<DollarSign className="w-5 h-5" />} label="Commission" value={`ETB ${(totalCommission / 1000).toFixed(0)}K`} accent />
       </div>
 
       {/* Closings table */}
@@ -224,8 +224,8 @@ export default function Closings() {
                     className="border-b border-border last:border-0 hover:bg-orange-subtle/40 cursor-pointer transition">
                     <td className="px-4 py-3 text-sm font-medium">{c.property_name}</td>
                     <td className="px-4 py-3 text-sm">{c.buyer_name}</td>
-                    <td className="px-4 py-3 text-sm">PKR {Number(c.deal_price).toLocaleString()}</td>
-                    <td className="px-4 py-3 text-sm text-accent font-medium">PKR {Number(c.commission_amount).toLocaleString()}</td>
+                    <td className="px-4 py-3 text-sm">ETB {Number(c.deal_price).toLocaleString()}</td>
+                    <td className="px-4 py-3 text-sm text-accent font-medium">ETB {Number(c.commission_amount).toLocaleString()}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${statusStyles[c.status].bg}`}>
                         <Icon className="w-3 h-3" /> {statusStyles[c.status].label}
@@ -264,7 +264,7 @@ export default function Closings() {
             <Field label="Buyer ID/CNIC" value={form.buyer_id_number} onChange={(v) => setForm({ ...form, buyer_id_number: v })} />
             <Field label="Seller name" value={form.seller_name} onChange={(v) => setForm({ ...form, seller_name: v })} />
             <Field label="Seller phone" value={form.seller_phone} onChange={(v) => setForm({ ...form, seller_phone: v })} />
-            <Field label="Deal price (PKR) *" type="number" value={form.deal_price} onChange={(v) => setForm({ ...form, deal_price: v })} />
+            <Field label="Deal price (ETB) *" type="number" value={form.deal_price} onChange={(v) => setForm({ ...form, deal_price: v })} />
             <Field label="Commission %" type="number" value={form.commission_percent} onChange={(v) => {
               const pct = Number(v); const price = Number(form.deal_price);
               setForm({ ...form, commission_percent: v, commission_amount: price && pct ? ((price * pct) / 100).toString() : form.commission_amount });
@@ -325,8 +325,8 @@ export default function Closings() {
 
                 <TabsContent value="details" className="space-y-3 mt-4">
                   <DetailRow icon={<Building2 className="w-4 h-4" />} label="Property" value={selected.property_name} />
-                  <DetailRow icon={<DollarSign className="w-4 h-4" />} label="Deal price" value={`PKR ${Number(selected.deal_price).toLocaleString()}`} />
-                  <DetailRow icon={<DollarSign className="w-4 h-4" />} label="Commission" value={`PKR ${Number(selected.commission_amount).toLocaleString()} (${selected.commission_percent}%)`} />
+                  <DetailRow icon={<DollarSign className="w-4 h-4" />} label="Deal price" value={`ETB ${Number(selected.deal_price).toLocaleString()}`} />
+                  <DetailRow icon={<DollarSign className="w-4 h-4" />} label="Commission" value={`ETB ${Number(selected.commission_amount).toLocaleString()} (${selected.commission_percent}%)`} />
                   <DetailRow icon={<Calendar className="w-4 h-4" />} label="Deal length" value={selected.deal_length_months ? `${selected.deal_length_months} months` : "—"} />
                   <DetailRow icon={<FileText className="w-4 h-4" />} label="Payment" value={selected.payment_method ?? "—"} />
                   <DetailRow icon={<Calendar className="w-4 h-4" />} label="Signed" value={selected.signed_date ? format(new Date(selected.signed_date), "PPP") : "—"} />
