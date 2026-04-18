@@ -177,12 +177,12 @@ const Inventory = () => {
                     <Input value={form.block} onChange={e => setForm({ ...form, block: e.target.value })} />
                   </div>
                   <div>
-                    <Label>Price (PKR)</Label>
+                    <Label>Price (ETB)</Label>
                     <Input type="number" value={form.price || ""} onChange={e => setForm({ ...form, price: Number(e.target.value) })} />
                   </div>
                   <div>
                     <Label>Price Label</Label>
-                    <Input placeholder="PKR 45L" value={form.price_label} onChange={e => setForm({ ...form, price_label: e.target.value })} />
+                    <Input placeholder="ETB 45L" value={form.price_label} onChange={e => setForm({ ...form, price_label: e.target.value })} />
                   </div>
                   <div>
                     <Label>Area (sqft)</Label>
@@ -302,7 +302,7 @@ const Inventory = () => {
                     {prop.bedrooms && <span className="flex items-center gap-1"><Bed className="w-3 h-3" />{prop.bedrooms}</span>}
                     {prop.bathrooms && <span className="flex items-center gap-1"><Bath className="w-3 h-3" />{prop.bathrooms}</span>}
                   </div>
-                  <p className="text-lg font-bold text-accent">{prop.price_label || `PKR ${(prop.price / 100000).toFixed(0)}L`}</p>
+                  <p className="text-lg font-bold text-accent">{prop.price_label || `ETB ${(prop.price / 100000).toFixed(0)}L`}</p>
                   {prop.features && prop.features.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {(prop.features as string[]).slice(0, 3).map((f) => (

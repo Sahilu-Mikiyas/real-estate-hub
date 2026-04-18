@@ -142,8 +142,8 @@ export default function AgentDetail() {
           <Card><CardContent className="p-0 overflow-x-auto">
             <DataTable rows={closings} cols={[
               { k: "property_name", l: "Property" }, { k: "buyer_name", l: "Buyer" },
-              { k: "deal_price", l: "Price", fmt: (v) => `PKR ${Number(v).toLocaleString()}` },
-              { k: "commission_amount", l: "Commission", fmt: (v) => `PKR ${Number(v).toLocaleString()}` },
+              { k: "deal_price", l: "Price", fmt: (v) => `ETB ${Number(v).toLocaleString()}` },
+              { k: "commission_amount", l: "Commission", fmt: (v) => `ETB ${Number(v).toLocaleString()}` },
               { k: "status", l: "Status" },
               { k: "created_at", l: "Date", fmt: (v) => format(new Date(v), "PP") },
             ]} />
