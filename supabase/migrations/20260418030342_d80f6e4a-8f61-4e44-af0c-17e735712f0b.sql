@@ -1,0 +1,2 @@
+UPDATE public.properties SET price_label = REPLACE(price_label, 'PKR', 'Birr') WHERE price_label LIKE '%PKR%';
+UPDATE public.rewards SET name = REPLACE(name, 'PKR', 'Birr'), description = REPLACE(description, 'PKR', 'Birr') WHERE name LIKE '%PKR%' OR description LIKE '%PKR%';
