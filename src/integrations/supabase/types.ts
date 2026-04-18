@@ -109,6 +109,184 @@ export type Database = {
         }
         Relationships: []
       }
+      closing_documents: {
+        Row: {
+          closing_id: string
+          created_at: string
+          doc_type: string
+          file_path: string
+          file_size: number | null
+          id: string
+          label: string
+          uploaded_by: string
+        }
+        Insert: {
+          closing_id: string
+          created_at?: string
+          doc_type?: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          label: string
+          uploaded_by: string
+        }
+        Update: {
+          closing_id?: string
+          created_at?: string
+          doc_type?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          label?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "closing_documents_closing_id_fkey"
+            columns: ["closing_id"]
+            isOneToOne: false
+            referencedRelation: "closings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      closings: {
+        Row: {
+          agent_id: string
+          buyer_email: string | null
+          buyer_id_number: string | null
+          buyer_name: string
+          buyer_phone: string | null
+          commission_amount: number
+          commission_percent: number
+          completed_at: string | null
+          created_at: string
+          deal_length_months: number | null
+          deal_price: number
+          id: string
+          lead_id: string | null
+          notes: string | null
+          parties: Json | null
+          payment_method: string | null
+          payment_schedule: Json | null
+          property_id: string | null
+          property_name: string
+          seller_name: string | null
+          seller_phone: string | null
+          signed_date: string | null
+          status: Database["public"]["Enums"]["closing_status"]
+          team_id: string | null
+          terms: string | null
+          updated_at: string
+          witnesses: Json | null
+        }
+        Insert: {
+          agent_id: string
+          buyer_email?: string | null
+          buyer_id_number?: string | null
+          buyer_name: string
+          buyer_phone?: string | null
+          commission_amount?: number
+          commission_percent?: number
+          completed_at?: string | null
+          created_at?: string
+          deal_length_months?: number | null
+          deal_price?: number
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          parties?: Json | null
+          payment_method?: string | null
+          payment_schedule?: Json | null
+          property_id?: string | null
+          property_name: string
+          seller_name?: string | null
+          seller_phone?: string | null
+          signed_date?: string | null
+          status?: Database["public"]["Enums"]["closing_status"]
+          team_id?: string | null
+          terms?: string | null
+          updated_at?: string
+          witnesses?: Json | null
+        }
+        Update: {
+          agent_id?: string
+          buyer_email?: string | null
+          buyer_id_number?: string | null
+          buyer_name?: string
+          buyer_phone?: string | null
+          commission_amount?: number
+          commission_percent?: number
+          completed_at?: string | null
+          created_at?: string
+          deal_length_months?: number | null
+          deal_price?: number
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          parties?: Json | null
+          payment_method?: string | null
+          payment_schedule?: Json | null
+          property_id?: string | null
+          property_name?: string
+          seller_name?: string | null
+          seller_phone?: string | null
+          signed_date?: string | null
+          status?: Database["public"]["Enums"]["closing_status"]
+          team_id?: string | null
+          terms?: string | null
+          updated_at?: string
+          witnesses?: Json | null
+        }
+        Relationships: []
+      }
+      lead_followups: {
+        Row: {
+          action: Database["public"]["Enums"]["followup_action"]
+          agent_id: string
+          created_at: string
+          id: string
+          lead_id: string
+          new_status: string | null
+          next_action_date: string | null
+          notes: string | null
+          old_status: string | null
+          team_id: string | null
+        }
+        Insert: {
+          action?: Database["public"]["Enums"]["followup_action"]
+          agent_id: string
+          created_at?: string
+          id?: string
+          lead_id: string
+          new_status?: string | null
+          next_action_date?: string | null
+          notes?: string | null
+          old_status?: string | null
+          team_id?: string | null
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["followup_action"]
+          agent_id?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+          new_status?: string | null
+          next_action_date?: string | null
+          notes?: string | null
+          old_status?: string | null
+          team_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_followups_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           agent_id: string
@@ -180,6 +358,45 @@ export type Database = {
           read?: boolean
           title?: string
           type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profile_preferences: {
+        Row: {
+          bio: string | null
+          created_at: string
+          notify_closings: boolean
+          notify_email: boolean
+          notify_in_app: boolean
+          notify_leads: boolean
+          phone: string | null
+          theme: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          notify_closings?: boolean
+          notify_email?: boolean
+          notify_in_app?: boolean
+          notify_leads?: boolean
+          phone?: string | null
+          theme?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          notify_closings?: boolean
+          notify_email?: boolean
+          notify_in_app?: boolean
+          notify_leads?: boolean
+          phone?: string | null
+          theme?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -444,6 +661,14 @@ export type Database = {
     }
     Enums: {
       app_role: "agent" | "supervisor" | "admin"
+      closing_status: "draft" | "pending" | "completed" | "cancelled"
+      followup_action:
+        | "status_change"
+        | "note"
+        | "call"
+        | "email"
+        | "meeting"
+        | "reminder"
       lead_potential: "high" | "medium" | "low"
       lead_status:
         | "new"
@@ -591,6 +816,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["agent", "supervisor", "admin"],
+      closing_status: ["draft", "pending", "completed", "cancelled"],
+      followup_action: [
+        "status_change",
+        "note",
+        "call",
+        "email",
+        "meeting",
+        "reminder",
+      ],
       lead_potential: ["high", "medium", "low"],
       lead_status: [
         "new",
