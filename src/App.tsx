@@ -26,6 +26,7 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import { routeRoleMap } from "@/lib/permissions";
 
 const queryClient = new QueryClient();
 
@@ -63,7 +64,7 @@ const App = () => (
                         <Route
                           path="/team"
                           element={
-                            <ProtectedRoute allowedRoles={["supervisor", "admin"]}>
+                            <ProtectedRoute allowedRoles={routeRoleMap["/team"]}>
                               <TeamOverview />
                             </ProtectedRoute>
                           }
@@ -71,7 +72,7 @@ const App = () => (
                         <Route
                           path="/team/:id"
                           element={
-                            <ProtectedRoute allowedRoles={["supervisor", "admin"]}>
+                            <ProtectedRoute allowedRoles={routeRoleMap["/team"]}>
                               <AgentDetail />
                             </ProtectedRoute>
                           }
@@ -79,7 +80,7 @@ const App = () => (
                         <Route
                           path="/admin"
                           element={
-                            <ProtectedRoute allowedRoles={["admin"]}>
+                            <ProtectedRoute allowedRoles={routeRoleMap["/admin"]}>
                               <AdminPanel />
                             </ProtectedRoute>
                           }

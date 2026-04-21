@@ -18,21 +18,22 @@ import {
 import { NavLink, useLocation } from "react-router-dom";
 import { useRBAC } from "@/contexts/RBACContext";
 import { useState } from "react";
+import { canAccessRoute } from "@/lib/permissions";
 
 const navItems = [
-  { title: "Dashboard", path: "/", icon: LayoutDashboard, roles: ["agent", "supervisor", "admin"] },
-  { title: "Leads", path: "/leads", icon: Users, roles: ["agent", "supervisor", "admin"] },
-  { title: "Follow-up", path: "/followup", icon: GitBranch, roles: ["agent", "supervisor", "admin"] },
-  { title: "Visits", path: "/visits", icon: CalendarDays, roles: ["agent", "supervisor", "admin"] },
-  { title: "Closings", path: "/closings", icon: FileSignature, roles: ["agent", "supervisor", "admin"] },
-  { title: "Social Media", path: "/social", icon: Share2, roles: ["agent", "supervisor", "admin"] },
-  { title: "Inventory", path: "/inventory", icon: Building2, roles: ["agent", "supervisor", "admin"] },
-  { title: "Showroom", path: "/showroom", icon: Home, roles: ["agent", "supervisor", "admin"] },
-  { title: "Leaderboard", path: "/leaderboard", icon: Trophy, roles: ["agent", "supervisor", "admin"] },
-  { title: "Rewards", path: "/rewards", icon: Gift, roles: ["agent", "supervisor", "admin"] },
-  { title: "Team", path: "/team", icon: UsersRound, roles: ["supervisor", "admin"] },
-  { title: "Profile", path: "/profile", icon: UserCircle, roles: ["agent", "supervisor", "admin"] },
-  { title: "Admin Panel", path: "/admin", icon: Shield, roles: ["admin"] },
+  { title: "Dashboard", path: "/", icon: LayoutDashboard },
+  { title: "Leads", path: "/leads", icon: Users },
+  { title: "Follow-up", path: "/followup", icon: GitBranch },
+  { title: "Visits", path: "/visits", icon: CalendarDays },
+  { title: "Closings", path: "/closings", icon: FileSignature },
+  { title: "Social Media", path: "/social", icon: Share2 },
+  { title: "Inventory", path: "/inventory", icon: Building2 },
+  { title: "Showroom", path: "/showroom", icon: Home },
+  { title: "Leaderboard", path: "/leaderboard", icon: Trophy },
+  { title: "Rewards", path: "/rewards", icon: Gift },
+  { title: "Team", path: "/team", icon: UsersRound },
+  { title: "Profile", path: "/profile", icon: UserCircle },
+  { title: "Admin Panel", path: "/admin", icon: Shield },
 ];
 
 export function AppSidebar() {
@@ -40,7 +41,7 @@ export function AppSidebar() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
-  const filtered = navItems.filter((item) => item.roles.includes(role));
+  const filtered = navItems.filter((item) => canAccessRoute(item.path, role));
 
   return (
     <aside
@@ -61,7 +62,9 @@ export function AppSidebar() {
 
       <nav className="flex-1 py-4 space-y-0.5 px-2 overflow-y-auto">
         {filtered.map((item) => {
-          const isActive = location.pathname === item.path || (item.path === "/team" && location.pathname.startsWith("/team"));
+          const isActive =
+            location.pathname === item.path ||
+            (item.path === "/team" && location.pathname.startsWith("/team"));
           return (
             <NavLink
               key={item.path}
@@ -83,7 +86,11 @@ export function AppSidebar() {
         onClick={() => setCollapsed(!collapsed)}
         className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-card border border-border shadow-card flex items-center justify-center text-muted-foreground hover:text-accent transition-colors"
       >
-        {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+        {collapsed ? (
+          <ChevronRight className="w-3.5 h-3.5" />
+        ) : (
+          <ChevronLeft className="w-3.5 h-3.5" />
+        )}
       </button>
     </aside>
   );
